@@ -44,27 +44,28 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const isAuthenticated = !!token && !!user;
 
   useEffect(() => {
     const initAuth = async () => {
-      const savedToken = localStorage.getItem('token');
-      if (savedToken) {
-        try {
+      try {
+        const savedToken = localStorage.getItem('token');
+        if (savedToken) {
           const userData = await authService.getCurrentUser(savedToken);
           setUser(userData.user);
           setToken(savedToken);
-        } catch (error) {
-          console.error('Token validation failed:', error);
-          localStorage.removeItem('token');
-          setToken(null);
-          setUser(null);
         }
+      } catch (error) {
+        console.error('Token validation failed:', error);
+        localStorage.removeItem('token');
+        setToken(null);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     initAuth();

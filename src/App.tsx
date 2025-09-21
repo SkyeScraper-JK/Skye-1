@@ -5,7 +5,6 @@ import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
 import DeveloperDashboard from './components/Developer/DeveloperDashboard';
 import AgentDashboard from './components/Agent/AgentDashboard';
-import './App.css';
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles: string[] }) => {
   const { user, isAuthenticated } = useAuth();
@@ -22,8 +21,15 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
 };
 
 const AppRoutes = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <Routes>
@@ -64,7 +70,8 @@ const AppRoutes = () => {
           <Navigate to="/login" replace />
         )
       } />
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
