@@ -8,6 +8,7 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+const fs = require('fs');
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -19,7 +20,19 @@ import uploadRoutes from './routes/upload.js';
 import { authenticateToken, authorizeRole } from './middleware/auth.js';
 
 // Import services
-import { initializeSocket } from './services/socketService.js';
+// const { initializeSocket } = require('./services/socketService');
+
+// Load environment variables
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.PORT = process.env.PORT || '5000';
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-here';
+process.env.CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+
+// Ensure uploads directory exists
+const uploadsDir = 'uploads';
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,6 +65,9 @@ app.use(cors({
   origin: true,
   credentials: true
 }));
+  origin: true,
+  credentials: true
+}));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -80,16 +96,24 @@ const upload = multer({
 });
 
 // Initialize services
-initializeSocket(io);
+// initializeSocket(io);
+
+// Make io available globally
+app.set('io', io);
 
 // Make io available globally
 app.set('io', io);
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/developer', authenticateToken, authorizeRole(['DEVELOPER', 'ADMIN']), developerRoutes);
-app.use('/api/agent', authenticateToken, authorizeRole(['AGENT', 'ADMIN']), agentRoutes);
-app.use('/api/upload', authenticateToken, upload.single('file'), uploadRoutes);
+// app.use('/api/developer', authenticateToken, authorizeRole(['DEVELOPER', 'ADMIN']), developerRoutes);
+// app.use('/api/agent', authenticateToken, authorizeRole(['AGENT', 'ADMIN']), agentRoutes);
+// app.use('/api/upload', authenticateToken, upload.single('file'), uploadRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -108,5 +132,6 @@ app.use((error, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📱 Client URL: ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
   console.log(`📱 Client URL: ${process.env.CLIENT_URL || 'http://localhost:5173'}`);
 });

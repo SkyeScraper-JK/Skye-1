@@ -1,6 +1,6 @@
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
-export const authenticateToken = (req, res, next) => {
+const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -11,7 +11,7 @@ export const authenticateToken = (req, res, next) => {
     });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET || 'your-super-secret-jwt-key-here', (err, user) => {
     if (err) {
       return res.status(403).json({
         success: false,
@@ -24,7 +24,7 @@ export const authenticateToken = (req, res, next) => {
   });
 };
 
-export const authorizeRole = (roles) => {
+const authorizeRole = (roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
@@ -35,3 +35,5 @@ export const authorizeRole = (roles) => {
     next();
   };
 };
+
+module.exports = { authenticateToken, authorizeRole };

@@ -1,11 +1,11 @@
-import express from 'express';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import Joi from 'joi';
+const express = require('express');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const Joi = require('joi');
 
 const router = express.Router();
 
-// Mock database for demo - replace with Supabase in production
+// Mock database for demo - replace with actual database in production
 const users = [
   {
     id: 1,
@@ -81,7 +81,7 @@ router.post('/login', async (req, res) => {
         first_name: user.first_name,
         last_name: user.last_name
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'your-super-secret-jwt-key-here',
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
@@ -156,7 +156,7 @@ router.post('/register', async (req, res) => {
         first_name: newUser.first_name,
         last_name: newUser.last_name
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'your-super-secret-jwt-key-here',
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
@@ -195,7 +195,7 @@ router.get('/me', (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-super-secret-jwt-key-here');
     const user = users.find(u => u.id === decoded.id);
     
     if (!user || !user.is_active) {
@@ -224,4 +224,4 @@ router.get('/me', (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

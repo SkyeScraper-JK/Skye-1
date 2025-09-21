@@ -43,6 +43,11 @@ const Login = () => {
     };
     
     setFormData(credentials[role]);
+    
+    // Auto-submit for demo
+    setTimeout(() => {
+      handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+    }, 100);
   };
 
   return (
