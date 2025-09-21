@@ -4,10 +4,9 @@
   "description": "Multi-role real estate platform with Excel upload system",
   "main": "server.js",
   "scripts": {
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "dev": "vite",
     "server": "node server.js",
-    "client": "npm run dev:client",
-    "dev:client": "vite",
+    "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
     "build": "vite build",
     "preview": "vite preview",
     "migrate": "node migrations/migrate.js"
