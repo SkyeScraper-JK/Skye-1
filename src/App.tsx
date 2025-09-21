@@ -24,14 +24,6 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode;
 const AppRoutes = () => {
   const { user, isAuthenticated } = useAuth();
 
-  if (isAuthenticated && user) {
-    // Redirect based on user role
-    if (user.role === 'DEVELOPER') {
-      return <Navigate to="/developer/dashboard" replace />;
-    } else if (user.role === 'AGENT') {
-      return <Navigate to="/agent/dashboard" replace />;
-    }
-  }
 
   return (
     <Routes>
@@ -59,7 +51,19 @@ const AppRoutes = () => {
         </div>
       } />
       
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={
+        isAuthenticated && user ? (
+          user.role === 'DEVELOPER' ? (
+            <Navigate to="/developer/dashboard" replace />
+          ) : user.role === 'AGENT' ? (
+            <Navigate to="/agent/dashboard" replace />
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        ) : (
+          <Navigate to="/login" replace />
+        )
+      } />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
