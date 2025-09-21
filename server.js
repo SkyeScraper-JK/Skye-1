@@ -7,7 +7,6 @@ import compression from 'compression';
 import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
 import fs from 'fs';
 
 // Import routes
@@ -25,7 +24,11 @@ import { initializeSocket } from './services/socketService.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
+// Load environment variables
+process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+process.env.PORT = process.env.PORT || '5000';
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-here';
+process.env.CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 // Ensure uploads directory exists
 const uploadsDir = 'uploads';
