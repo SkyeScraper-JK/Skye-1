@@ -6,13 +6,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    host: true,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true,
-      },
-    },
+    host: '0.0.0.0',
+    strictPort: true,
+    // Remove proxy temporarily to avoid connection issues
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
